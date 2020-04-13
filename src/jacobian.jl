@@ -107,7 +107,7 @@ end
 
 function extract_jacobian!(::Type{T}, result::AbstractArray, ydual::AbstractArray, n) where {T}
     out_reshaped = reshape(result, length(ydual), n)
-    temp = zero(T)
+    temp = 0.0
     for col in 1:size(out_reshaped, 2), row in 1:size(out_reshaped, 1)
         temp = partials(T, ydual[row], i)
         if !iszero(temp)
@@ -126,7 +126,7 @@ function extract_jacobian_chunk!(::Type{T}, result, ydual, index, chunksize) whe
     offset = index - 1
     for i in 1:chunksize
         col = i + offset
-        temp = zero(T)
+        temp = 0.0
         for row in eachindex(ydual)
             temp = partials(T, ydual[row], i)
             if !iszero(temp)
