@@ -129,6 +129,19 @@ function extract_jacobian_chunk!(::Type{T}, result, ydual, index, chunksize) whe
     return result
 end
 
+function extract_jacobian_chunk!(::Type{T}, result::AbstractSparseMatrix, ydual, index, chunksize) where {T}
+    offset = index - 1
+    for i in 1:chunksize
+        col = i + offset
+        for row in eachindex(ydual)
+            if !iszero(ydual[row])
+                result[row, col] = ForwardDiff.partials(T, ydual[row], i)
+            end
+        end
+    end
+    return result
+end
+
 reshape_jacobian(result, ydual, xdual) = reshape(result, length(ydual), length(xdual))
 reshape_jacobian(result::DiffResult, ydual, xdual) = reshape_jacobian(DiffResults.jacobian(result), ydual, xdual)
 
